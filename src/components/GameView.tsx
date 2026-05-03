@@ -271,7 +271,7 @@ export default function GameView({ mode, words, onGameOver, onBackToHome, onRest
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex min-h-0 relative items-start pt-0 md:pt-0 -mt-12 md:-mt-20 px-4 mb-2 overflow-hidden">
+      <div className="flex-1 flex min-h-0 relative items-start pt-0 md:pt-0 -mt-4 md:-mt-8 px-4 mb-2 overflow-hidden">
         
         {/* PK MODE: P1 SIDEBAR (LEFT) */}
         {mode === 'pk' && (
