@@ -279,7 +279,7 @@ export default function GameView({ mode, words, onGameOver, onBackToHome, onRest
 
       {/* Main Content Area — solo: pull block up ~2cm; allow vertical overflow so card pile isn’t clipped above bottom dock */}
       <div
-        className={`flex-1 flex min-h-0 relative items-start pt-0 md:pt-0 px-4 mb-2 min-h-0 ${
+        className={`flex-1 flex min-h-0 relative items-start pt-0 md:pt-0 px-4 mb-2 ${
           mode === 'solo' ? '-mt-[2cm] md:-mt-[2cm] overflow-x-hidden overflow-y-visible' : 'overflow-hidden'
         }`}
       >
