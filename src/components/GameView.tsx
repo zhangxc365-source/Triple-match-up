@@ -277,8 +277,12 @@ export default function GameView({ mode, words, onGameOver, onBackToHome, onRest
         </div>
       </div>
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex min-h-0 relative items-start pt-0 md:pt-0 px-4 mb-2 overflow-hidden">
+      {/* Main Content Area — solo: pull block up ~2cm; allow vertical overflow so card pile isn’t clipped above bottom dock */}
+      <div
+        className={`flex-1 flex min-h-0 relative items-start pt-0 md:pt-0 px-4 mb-2 min-h-0 ${
+          mode === 'solo' ? '-mt-[2cm] md:-mt-[2cm] overflow-x-hidden overflow-y-visible' : 'overflow-hidden'
+        }`}
+      >
         
         {/* PK MODE: P1 SIDEBAR (LEFT) */}
         {mode === 'pk' && (
@@ -288,8 +292,18 @@ export default function GameView({ mode, words, onGameOver, onBackToHome, onRest
         )}
 
         {/* Shared Board (Center) */}
-        <div className={`flex-1 relative overflow-hidden flex items-center justify-center min-h-0 h-full ${mode === 'pk' ? 'bg-white/40' : ''}`}>
-          <div className={`relative ${mode === 'pk' ? 'w-[800px] h-[500px] scale-[0.6] sm:scale-[0.8] lg:scale-100' : 'w-full max-w-4xl h-full mx-auto scale-[0.9] sm:scale-[0.95] lg:scale-100'}`}>
+        <div
+          className={`flex-1 relative flex min-h-0 h-full items-stretch justify-center ${
+            mode === 'solo' ? 'overflow-x-hidden overflow-y-visible' : 'overflow-hidden items-center'
+          } ${mode === 'pk' ? 'bg-white/40' : ''}`}
+        >
+          <div
+            className={`relative min-h-0 ${
+              mode === 'pk'
+                ? 'w-[800px] h-[500px] shrink-0 self-center scale-[0.6] sm:scale-[0.8] lg:scale-100'
+                : 'w-full max-w-4xl h-full mx-auto min-h-[240px] scale-[0.9] sm:scale-[0.95] lg:scale-100'
+            }`}
+          >
             {cards.map((card) => (
               !card.isInSlot && !card.isMatched && !card.isOut && (
                 <motion.div
