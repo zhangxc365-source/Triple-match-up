@@ -40,4 +40,6 @@ export interface UserStats {
   timeRemaining: number;
   totalTime: number;
   isEliminated?: boolean;
+  usedWords?: Word[];
+  matchedWordIds?: string[];
 }

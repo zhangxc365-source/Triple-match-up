@@ -23,6 +23,7 @@ export default function ResultPage({ stats, words, winner, onHome, onReplay, onN
   };
 
   const title = getTitle();
+  const displayWords = stats.usedWords || words;
 
   return (
     <div className="flex flex-col w-full h-full p-4 md:p-8 bg-[#E0F2F1] overflow-hidden">
@@ -59,16 +60,18 @@ export default function ResultPage({ stats, words, winner, onHome, onReplay, onN
           <span className="flex-1 text-right">ENGLISH MEANING</span>
         </div>
         <div className="flex-1 overflow-y-auto px-4 md:px-8 divide-y-2 divide-gray-100 custom-scrollbar">
-          {words.map((word, i) => (
-            <div key={word.id} className="py-3 md:py-5 flex items-center">
-              <span className="w-8 md:w-12">
-                {i < stats.matches ? <Check className="text-green-500 shrink-0" size={window.innerWidth < 768 ? 16 : 24} strokeWidth={4} /> : <X className="text-red-400 shrink-0" size={window.innerWidth < 768 ? 16 : 24} strokeWidth={4} />}
-              </span>
+          {displayWords.map((word, i) => {
+            const isMatched = stats.matchedWordIds ? stats.matchedWordIds.includes(word.id) : (i < stats.matches);
+            return (
+              <div key={word.id} className="py-3 md:py-5 flex items-center">
+                <span className="w-8 md:w-12">
+                  {isMatched ? <Check className="text-green-500 shrink-0" size={window.innerWidth < 768 ? 16 : 24} strokeWidth={4} /> : <X className="text-red-400 shrink-0" size={window.innerWidth < 768 ? 16 : 24} strokeWidth={4} />}
+                </span>
               <span className="flex-1 font-black font-chinese text-xl md:text-3xl text-blue-900">{word.char}</span>
               <span className="flex-1 text-center text-sm md:text-xl font-black text-blue-600 tracking-widest font-chinese">{word.pinyin.toLowerCase()}</span>
               <span className="flex-1 text-[10px] md:text-sm font-black text-teal-950 text-right uppercase italic font-chinese">{word.translation.en}</span>
             </div>
-          ))}
+          ); })}
         </div>
       </div>
 

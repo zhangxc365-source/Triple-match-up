@@ -33,8 +33,7 @@ export const useGameLogic = (words: Word[], totalTime: number, mode: GameMode = 
   const effectiveMinX = mode === 'pk' ? 40 : MIN_X;
   const effectiveMaxX = mode === 'pk' ? 640 : MAX_X; // 800 - 120 - 40 = 640
   const effectiveMinY = mode === 'pk' ? 30 : MIN_Y;
-  // Solo: cap Y so the pile stays higher — large MAX_Y + short flex middle used to push cards into the bottom dock visually
-  const effectiveMaxY = mode === 'pk' ? 315 : Math.min(MAX_Y, 300);
+  const effectiveMaxY = mode === 'pk' ? 315 : MAX_Y; // 500 - 155 - 30 = 315
 
   // Helper to update blocked status without re-creating every object if unnecessary
   const updateBlockedStatus = useCallback((allCards: Card[]) => {
@@ -198,6 +197,9 @@ export const useGameLogic = (words: Word[], totalTime: number, mode: GameMode = 
 
   const matched1 = cards.filter(c => c.isMatched && c.slotOwner === 'p1').length / 3;
   const matched2 = cards.filter(c => c.isMatched && c.slotOwner === 'p2').length / 3;
+
+  const matchedWordIds1 = Array.from(new Set(cards.filter(c => c.isMatched && c.slotOwner === 'p1').map(c => c.wordId)));
+  const matchedWordIds2 = Array.from(new Set(cards.filter(c => c.isMatched && c.slotOwner === 'p2').map(c => c.wordId)));
 
   const score1 = matched1 * 10;
   const score2 = matched2 * 10;
@@ -407,6 +409,8 @@ export const useGameLogic = (words: Word[], totalTime: number, mode: GameMode = 
     earnedTools,
     usedTools,
     currentLevelWords,
+    matchedWordIds1,
+    matchedWordIds2,
     setIsPaused,
     selectCard,
     props,
