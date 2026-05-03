@@ -30,6 +30,7 @@ export default function GameView({ mode, words, onGameOver, onBackToHome, onRest
     earnedTools,
     usedTools,
     currentLevelWords,
+    actuallyAppearedWordIds,
     matchedWordIds1,
     matchedWordIds2,
     setIsPaused,
@@ -51,9 +52,13 @@ export default function GameView({ mode, words, onGameOver, onBackToHome, onRest
   useEffect(() => {
     if (isGameOver && !hasCalledGameOver.current) {
       hasCalledGameOver.current = true;
+      
+      // 核心修正：只保留在本关卡真正作为卡牌出现过的单词
+      const sessionWords = currentLevelWords.filter(w => actuallyAppearedWordIds.includes(w.id));
+      
       // In PK mode, determine winner and send both stats
-      const s1: UserStats = { score: score1, matches: matched1, timeRemaining, totalTime: 150, isEliminated: eliminated.p1, usedWords: currentLevelWords, matchedWordIds: matchedWordIds1 };
-      const s2: UserStats = { score: score2, matches: matched2, timeRemaining, totalTime: 150, isEliminated: eliminated.p2, usedWords: currentLevelWords, matchedWordIds: matchedWordIds2 };
+      const s1: UserStats = { score: score1, matches: matched1, timeRemaining, totalTime: 150, isEliminated: eliminated.p1, usedWords: sessionWords, matchedWordIds: matchedWordIds1 };
+      const s2: UserStats = { score: score2, matches: matched2, timeRemaining, totalTime: 150, isEliminated: eliminated.p2, usedWords: sessionWords, matchedWordIds: matchedWordIds2 };
       
       let winnerId: string | null = 'P1';
       if (score2 > score1) {
@@ -72,9 +77,9 @@ export default function GameView({ mode, words, onGameOver, onBackToHome, onRest
         }
       }
 
-      onGameOver(mode === 'pk' ? ({ winnerId, s1, s2 } as any) : { score: score1, matches: matched1, timeRemaining, totalTime: 150, usedWords: currentLevelWords, matchedWordIds: matchedWordIds1 });
+      onGameOver(mode === 'pk' ? ({ winnerId, s1, s2 } as any) : { score: score1, matches: matched1, timeRemaining, totalTime: 150, usedWords: sessionWords, matchedWordIds: matchedWordIds1 });
     }
-  }, [isGameOver, score1, score2, matched1, matched2, timeRemaining, eliminated, onGameOver, mode, currentLevelWords, matchedWordIds1, matchedWordIds2]);
+  }, [isGameOver, score1, score2, matched1, matched2, timeRemaining, eliminated, onGameOver, mode, currentLevelWords, matchedWordIds1, matchedWordIds2, actuallyAppearedWordIds]);
 
   const handleToolClick = (tool: 'shuffle' | 'moveOut' | 'autoMatch', player: 'p1' | 'p2' = 'p1') => {
     if (usedTools[tool]) return;

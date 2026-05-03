@@ -201,6 +201,9 @@ export const useGameLogic = (words: Word[], totalTime: number, mode: GameMode = 
   const matchedWordIds1 = Array.from(new Set(cards.filter(c => c.isMatched && c.slotOwner === 'p1').map(c => c.wordId)));
   const matchedWordIds2 = Array.from(new Set(cards.filter(c => c.isMatched && c.slotOwner === 'p2').map(c => c.wordId)));
 
+  // 提取当前所有卡牌中包含的单词 ID（即本局实际出现的词）
+  const actuallyAppearedWordIds = Array.from(new Set(cards.map(c => c.wordId)));
+
   const score1 = matched1 * 10;
   const score2 = matched2 * 10;
 
@@ -409,6 +412,7 @@ export const useGameLogic = (words: Word[], totalTime: number, mode: GameMode = 
     earnedTools,
     usedTools,
     currentLevelWords,
+    actuallyAppearedWordIds,
     matchedWordIds1,
     matchedWordIds2,
     setIsPaused,
