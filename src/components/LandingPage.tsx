@@ -11,7 +11,7 @@ export default function LandingPage({ onStartSolo, onStartPK, onShowIntro }: Pro
   return (
     <div className="relative flex flex-col w-full h-full bg-[#E0F2F1] overflow-hidden">
       {/* Scrollable Content Area */}
-      <div className="flex-1 flex flex-col items-center justify-center overflow-y-auto px-6 py-8 md:py-12">
+      <div className="flex-1 flex flex-col items-center justify-start pt-32 md:pt-48 overflow-y-auto px-6 py-8 md:py-12">
         <motion.div
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
