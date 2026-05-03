@@ -277,10 +277,10 @@ export default function GameView({ mode, words, onGameOver, onBackToHome, onRest
         </div>
       </div>
 
-      {/* Main Content Area — solo: pull block up ~2cm; allow vertical overflow so card pile isn’t clipped above bottom dock */}
+      {/* Main Content Area — solo: offset from header + translate so pile sits mid-screen, not under timer */}
       <div
         className={`flex-1 flex min-h-0 relative items-start pt-0 md:pt-0 px-4 mb-2 ${
-          mode === 'solo' ? 'mt-[1cm] md:mt-[1cm] overflow-x-hidden overflow-y-visible' : 'overflow-hidden'
+          mode === 'solo' ? 'mt-[2.5cm] md:mt-[2cm] overflow-x-hidden overflow-y-visible' : 'overflow-hidden'
         }`}
       >
         
@@ -301,7 +301,7 @@ export default function GameView({ mode, words, onGameOver, onBackToHome, onRest
             className={`relative min-h-0 ${
               mode === 'pk'
                 ? 'w-[800px] h-[500px] shrink-0 self-center scale-[0.6] sm:scale-[0.8] lg:scale-100'
-                : 'w-full max-w-4xl h-full mx-auto min-h-[240px] scale-[0.9] sm:scale-[0.95] lg:scale-100'
+                : 'w-full max-w-4xl h-full mx-auto min-h-[240px] scale-[0.9] sm:scale-[0.95] lg:scale-100 translate-y-[5vh] sm:translate-y-[6vh]'
             }`}
           >
             {cards.map((card) => (

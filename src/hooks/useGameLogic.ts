@@ -36,9 +36,10 @@ export const useGameLogic = (words: Word[], totalTime: number, mode: GameMode = 
   // Adjust boundaries for PK container (800x500) vs Solo container (max-w-4xl ~900x600)
   const effectiveMinX = mode === 'pk' ? 40 : MIN_X;
   const effectiveMaxX = mode === 'pk' ? (800 - currentCardWidth - 40) : MAX_X; 
-  const effectiveMinY = mode === 'pk' ? 30 : MIN_Y;
+  // Solo: slightly higher min Y so the pile sits lower in the board (less crowding under timer)
+  const effectiveMinY = mode === 'pk' ? 30 : 52;
   // Solo: keep pile within typical middle column height so bottom cards aren’t clipped by layout + bottom dock
-  const effectiveMaxY = mode === 'pk' ? 500 - currentCardHeight - 30 : Math.min(MAX_Y, 220);
+  const effectiveMaxY = mode === 'pk' ? 500 - currentCardHeight - 30 : Math.min(MAX_Y, 235);
   
   // Helper to update blocked status without re-creating every object if unnecessary
   const updateBlockedStatus = useCallback((allCards: Card[]) => {
