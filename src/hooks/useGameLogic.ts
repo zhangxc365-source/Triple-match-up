@@ -34,7 +34,6 @@ export const useGameLogic = (words: Word[], totalTime: number, mode: GameMode = 
   const effectiveMaxX = mode === 'pk' ? 640 : MAX_X; // 800 - 120 - 40 = 640
   const effectiveMinY = mode === 'pk' ? 30 : MIN_Y;
   const effectiveMaxY = mode === 'pk' ? 315 : MAX_Y; // 500 - 155 - 30 = 315
-
   // Helper to update blocked status without re-creating every object if unnecessary
   const updateBlockedStatus = useCallback((allCards: Card[]) => {
     const margin = 8; 
@@ -198,11 +197,11 @@ export const useGameLogic = (words: Word[], totalTime: number, mode: GameMode = 
   const matched1 = cards.filter(c => c.isMatched && c.slotOwner === 'p1').length / 3;
   const matched2 = cards.filter(c => c.isMatched && c.slotOwner === 'p2').length / 3;
 
-  const matchedWordIds1 = Array.from(new Set(cards.filter(c => c.isMatched && c.slotOwner === 'p1').map(c => c.wordId)));
-  const matchedWordIds2 = Array.from(new Set(cards.filter(c => c.isMatched && c.slotOwner === 'p2').map(c => c.wordId)));
+  const matchedWordIds1 = Array.from(new Set(cards.filter(c => c.isMatched && c.slotOwner === 'p1').map(c => c.wordId))) as string[];
+  const matchedWordIds2 = Array.from(new Set(cards.filter(c => c.isMatched && c.slotOwner === 'p2').map(c => c.wordId))) as string[];
 
   // 提取当前所有卡牌中包含的单词 ID（即本局实际出现的词）
-  const actuallyAppearedWordIds = Array.from(new Set(cards.map(c => c.wordId)));
+  const actuallyAppearedWordIds = Array.from(new Set(cards.map(c => c.wordId))) as string[];
 
   const score1 = matched1 * 10;
   const score2 = matched2 * 10;

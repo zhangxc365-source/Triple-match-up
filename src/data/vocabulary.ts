@@ -13,4 +13,4 @@ export const VOCABULARY: Word[] = [
   ...yct4Words,
   ...yct5Words,
   ...yct6Words,
-];
+].filter(word => !word.translation.en.toLowerCase().includes('measure word'));

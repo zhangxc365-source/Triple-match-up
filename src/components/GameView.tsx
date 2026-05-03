@@ -277,8 +277,8 @@ export default function GameView({ mode, words, onGameOver, onBackToHome, onRest
         </div>
       </div>
 
-       {/* Main Content Area */}
-      <div className="flex-1 flex min-h-0 relative items-start pt-0 md:pt-0 -mt-16 md:-mt-（-8） px-4 mb-2 overflow-hidden">
+      {/* Main Content Area */}
+      <div className="flex-1 flex min-h-0 relative items-start pt-0 md:pt-0 -mt-2 md:-mt-4 px-4 mb-2 overflow-hidden">
         
         {/* PK MODE: P1 SIDEBAR (LEFT) */}
         {mode === 'pk' && (
@@ -289,7 +289,7 @@ export default function GameView({ mode, words, onGameOver, onBackToHome, onRest
 
         {/* Shared Board (Center) */}
         <div className={`flex-1 relative overflow-hidden flex items-center justify-center min-h-0 h-full ${mode === 'pk' ? 'bg-white/40' : ''}`}>
-          <div className={`relative ${mode === 'pk' ? 'w-[800px] h-[500px] scale-[0.6] sm:scale-[0.8] lg:scale-100' : 'w-full max-w-4xl h-full mx-auto'}`}>
+          <div className={`relative ${mode === 'pk' ? 'w-[800px] h-[500px] scale-[0.6] sm:scale-[0.8] lg:scale-100' : 'w-full max-w-4xl h-full mx-auto scale-[0.9] sm:scale-[0.95] lg:scale-100'}`}>
             {cards.map((card) => (
               !card.isInSlot && !card.isMatched && !card.isOut && (
                 <motion.div
