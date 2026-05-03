@@ -6,7 +6,7 @@ const CARD_HEIGHT = 155;
 const MIN_X = 40;
 const MAX_X = 830;
 const MIN_Y = 30;
-const MAX_Y = 420;
+const MAX_Y = 380;
 
 export const useGameLogic = (words: Word[], totalTime: number, mode: GameMode = 'solo') => {
   const [cards, setCards] = useState<Card[]>([]);
@@ -29,11 +29,16 @@ export const useGameLogic = (words: Word[], totalTime: number, mode: GameMode = 
 
   const [currentLevelWords, setCurrentLevelWords] = useState<Word[]>([]);
 
+  // Dynamic card dimensions based on mode
+  const currentCardWidth = mode === 'pk' ? 120 : 114;
+  const currentCardHeight = mode === 'pk' ? 155 : 147;
+
   // Adjust boundaries for PK container (800x500) vs Solo container (max-w-4xl ~900x600)
   const effectiveMinX = mode === 'pk' ? 40 : MIN_X;
-  const effectiveMaxX = mode === 'pk' ? 640 : MAX_X; // 800 - 120 - 40 = 640
+  const effectiveMaxX = mode === 'pk' ? (800 - currentCardWidth - 40) : MAX_X; 
   const effectiveMinY = mode === 'pk' ? 30 : MIN_Y;
-  const effectiveMaxY = mode === 'pk' ? 315 : MAX_Y; // 500 - 155 - 30 = 315
+  const effectiveMaxY = mode === 'pk' ? (500 - currentCardHeight - 30) : MAX_Y; 
+  
   // Helper to update blocked status without re-creating every object if unnecessary
   const updateBlockedStatus = useCallback((allCards: Card[]) => {
     const margin = 8; 
@@ -48,10 +53,10 @@ export const useGameLogic = (words: Word[], totalTime: number, mode: GameMode = 
         !other.isMatched &&
         !other.isOut &&
         other.layer > target.layer &&
-        other.x < target.x + CARD_WIDTH - margin &&
-        other.x + CARD_WIDTH > target.x + margin &&
-        other.y < target.y + CARD_HEIGHT - margin &&
-        other.y + CARD_HEIGHT > target.y + margin
+        other.x < target.x + currentCardWidth - margin &&
+        other.x + currentCardWidth > target.x + margin &&
+        other.y < target.y + currentCardHeight - margin &&
+        other.y + currentCardHeight > target.y + margin
       );
       
       const shouldBeBlocked = !!blockingCard;
@@ -113,7 +118,7 @@ export const useGameLogic = (words: Word[], totalTime: number, mode: GameMode = 
           x = Math.round(effectiveMinX + Math.random() * (effectiveMaxX - effectiveMinX));
           y = Math.round(effectiveMinY + Math.random() * (effectiveMaxY - effectiveMinY));
           const overlap = finalCards.filter(c => c.layer === 0).some(c => 
-            Math.abs(c.x - x) < CARD_WIDTH * 0.7 && Math.abs(c.y - y) < CARD_HEIGHT * 0.7
+            Math.abs(c.x - x) < currentCardWidth * 0.7 && Math.abs(c.y - y) < currentCardHeight * 0.7
           );
           if (!overlap) foundSpot = true;
         } else {
@@ -121,8 +126,8 @@ export const useGameLogic = (words: Word[], totalTime: number, mode: GameMode = 
           const pool = finalCards.filter(c => c.layer === layerValue - 1);
           if (Math.random() < 0.7 && pool.length > 0) {
             const target = pool[Math.floor(Math.random() * pool.length)];
-            const offX = (Math.random() > 0.5 ? 1 : -1) * (CARD_WIDTH * (0.1 + Math.random() * 0.3));
-            const offY = (Math.random() > 0.5 ? 1 : -1) * (CARD_HEIGHT * (0.1 + Math.random() * 0.3));
+            const offX = (Math.random() > 0.5 ? 1 : -1) * (currentCardWidth * (0.1 + Math.random() * 0.3));
+            const offY = (Math.random() > 0.5 ? 1 : -1) * (currentCardHeight * (0.1 + Math.random() * 0.3));
             x = Math.round(Math.max(effectiveMinX, Math.min(effectiveMaxX, target.x + offX)));
             y = Math.round(Math.max(effectiveMinY, Math.min(effectiveMaxY, target.y + offY)));
           } else {
@@ -132,7 +137,7 @@ export const useGameLogic = (words: Word[], totalTime: number, mode: GameMode = 
 
           // Ensure no excessive overlap in the same layer
           const overlapSameLayer = finalCards.filter(c => c.layer === layerValue).some(c => 
-            Math.abs(c.x - x) < CARD_WIDTH * 0.5 && Math.abs(c.y - y) < CARD_HEIGHT * 0.5
+            Math.abs(c.x - x) < currentCardWidth * 0.5 && Math.abs(c.y - y) < currentCardHeight * 0.5
           );
           if (!overlapSameLayer) foundSpot = true;
         }
@@ -294,8 +299,8 @@ export const useGameLogic = (words: Word[], totalTime: number, mode: GameMode = 
 
         const convergeCards = remaining.map(c => ({
           ...c,
-          x: midX - 60, // card width / 2
-          y: midY - 77.5, // card height / 2
+          x: midX - currentCardWidth / 2,
+          y: midY - currentCardHeight / 2,
           rotation: 0,
           isBlocked: false
         }));
