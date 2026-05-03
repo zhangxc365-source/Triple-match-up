@@ -10,13 +10,13 @@ interface Props {
 export default function LandingPage({ onStartSolo, onStartPK, onShowIntro }: Props) {
   return (
     <div className="relative flex flex-col w-full h-full bg-[#E0F2F1] overflow-hidden">
-      {/* Scrollable Content Area */}
-      <div className="flex-1 flex flex-col items-center justify-start pt-32 md:pt-48 overflow-y-auto px-6 py-8 md:py-12">
+      {/* Content Area */}
+      <div className="flex-1 flex flex-col items-center justify-start pt-24 md:pt-32 px-6">
         <motion.div
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ type: 'spring', damping: 12 }}
-          className="text-center mb-8 md:mb-12"
+          className="text-center mb-4 md:mb-6"
         >
           <h1 className="text-[clamp(2.5rem,8vw,4.5rem)] font-black mb-1 md:mb-2 text-[#333] tracking-tighter uppercase italic font-chinese leading-none">
             Triple Match-Up
@@ -37,7 +37,7 @@ export default function LandingPage({ onStartSolo, onStartPK, onShowIntro }: Pro
       </div>
 
       {/* Sticky Bottom Button Section */}
-      <div className="sticky bottom-0 w-full bg-gradient-to-t from-[#E0F2F1] via-[#E0F2F1] to-transparent pt-8 pb-40 px-6">
+      <div className="w-full bg-gradient-to-t from-[#E0F2F1] via-[#E0F2F1] to-transparent pt-8 pb-32 px-6">
         <div className="max-w-sm mx-auto flex flex-col gap-3 md:gap-5">
           <motion.div
             initial={{ y: 20, opacity: 0 }}
