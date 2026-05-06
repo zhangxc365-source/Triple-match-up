@@ -17,7 +17,7 @@ export default function ResultPage({ stats, words, winner, onHome, onReplay, onN
   const getTitle = () => {
     if (winner === 'TIE') return { text: "IT'S A DRAW!", color: '#FFB74D', sub: '势均力敌' };
     if (winner) return { text: `${winner} VICTORIOUS!`, color: '#66BB6A', sub: '恭喜获胜' };
-    if (stats.matches >= 9) return { text: 'Vocabulary Expert', color: '#4CAF50', sub: '词汇达人' };
+    if (stats.matches >= 8) return { text: 'Vocabulary Expert', color: '#4CAF50', sub: '词汇达人' };
     if (stats.matches >= 5) return { text: 'Super Star', color: '#FFB74D', sub: '超级明星' };
     return { text: 'Keep Trying', color: '#FF7043', sub: '继续努力' };
   };

@@ -13,6 +13,8 @@ interface Props {
 }
 
 export default function GameView({ mode, words, onGameOver, onBackToHome, onRestart }: Props) {
+  const totalTime = 120;
+
   const {
     cards,
     slots1,
@@ -37,7 +39,7 @@ export default function GameView({ mode, words, onGameOver, onBackToHome, onRest
     selectCard,
     props,
     initCards
-  } = useGameLogic(words, 150, mode);
+  } = useGameLogic(words, totalTime, mode);
 
   const [quizData, setQuizData] = useState<{
     tool: 'shuffle' | 'moveOut' | 'autoMatch';
@@ -57,8 +59,8 @@ export default function GameView({ mode, words, onGameOver, onBackToHome, onRest
       const sessionWords = currentLevelWords.filter(w => actuallyAppearedWordIds.includes(w.id));
       
       // In PK mode, determine winner and send both stats
-      const s1: UserStats = { score: score1, matches: matched1, timeRemaining, totalTime: 150, isEliminated: eliminated.p1, usedWords: sessionWords, matchedWordIds: matchedWordIds1 };
-      const s2: UserStats = { score: score2, matches: matched2, timeRemaining, totalTime: 150, isEliminated: eliminated.p2, usedWords: sessionWords, matchedWordIds: matchedWordIds2 };
+      const s1: UserStats = { score: score1, matches: matched1, timeRemaining, totalTime, isEliminated: eliminated.p1, usedWords: sessionWords, matchedWordIds: matchedWordIds1 };
+      const s2: UserStats = { score: score2, matches: matched2, timeRemaining, totalTime, isEliminated: eliminated.p2, usedWords: sessionWords, matchedWordIds: matchedWordIds2 };
       
       let winnerId: string | null = 'P1';
       if (score2 > score1) {
@@ -77,7 +79,7 @@ export default function GameView({ mode, words, onGameOver, onBackToHome, onRest
         }
       }
 
-      onGameOver(mode === 'pk' ? ({ winnerId, s1, s2 } as any) : { score: score1, matches: matched1, timeRemaining, totalTime: 150, usedWords: sessionWords, matchedWordIds: matchedWordIds1 });
+      onGameOver(mode === 'pk' ? ({ winnerId, s1, s2 } as any) : { score: score1, matches: matched1, timeRemaining, totalTime, usedWords: sessionWords, matchedWordIds: matchedWordIds1 });
     }
   }, [isGameOver, score1, score2, matched1, matched2, timeRemaining, eliminated, onGameOver, mode, currentLevelWords, matchedWordIds1, matchedWordIds2, actuallyAppearedWordIds]);
 
@@ -277,12 +279,8 @@ export default function GameView({ mode, words, onGameOver, onBackToHome, onRest
         </div>
       </div>
 
-      {/* Main Content Area — solo: offset from header + translate so pile sits mid-screen, not under timer */}
-      <div
-        className={`flex-1 flex min-h-0 relative items-start pt-0 md:pt-0 px-4 mb-2 ${
-          mode === 'solo' ? 'mt-[2.5cm] md:mt-[2cm] overflow-x-hidden overflow-y-visible' : 'overflow-hidden'
-        }`}
-      >
+      {/* Main Content Area */}
+      <div className="flex-1 flex min-h-0 relative items-start pt-10 md:pt-16 px-4 mb-2 overflow-hidden">
         
         {/* PK MODE: P1 SIDEBAR (LEFT) */}
         {mode === 'pk' && (
@@ -292,18 +290,8 @@ export default function GameView({ mode, words, onGameOver, onBackToHome, onRest
         )}
 
         {/* Shared Board (Center) */}
-        <div
-          className={`flex-1 relative flex min-h-0 h-full items-stretch justify-center ${
-            mode === 'solo' ? 'overflow-x-hidden overflow-y-visible' : 'overflow-hidden items-center'
-          } ${mode === 'pk' ? 'bg-white/40' : ''}`}
-        >
-          <div
-            className={`relative min-h-0 ${
-              mode === 'pk'
-                ? 'w-[800px] h-[500px] shrink-0 self-center scale-[0.6] sm:scale-[0.8] lg:scale-100'
-                : 'w-full max-w-4xl h-full mx-auto min-h-[240px] scale-[0.9] sm:scale-[0.95] lg:scale-100 translate-y-[5vh] sm:translate-y-[6vh]'
-            }`}
-          >
+        <div className={`flex-1 relative overflow-hidden flex items-center justify-center min-h-0 h-full ${mode === 'pk' ? 'bg-white/40' : ''}`}>
+          <div className={`relative ${mode === 'pk' ? 'w-[800px] h-[500px] scale-[0.6] sm:scale-[0.8] lg:scale-100' : 'w-full max-w-4xl h-full mx-auto scale-[0.9] sm:scale-[0.95] lg:scale-100'}`}>
             {cards.map((card) => (
               !card.isInSlot && !card.isMatched && !card.isOut && (
                 <motion.div

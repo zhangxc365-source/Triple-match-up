@@ -36,10 +36,8 @@ export const useGameLogic = (words: Word[], totalTime: number, mode: GameMode = 
   // Adjust boundaries for PK container (800x500) vs Solo container (max-w-4xl ~900x600)
   const effectiveMinX = mode === 'pk' ? 40 : MIN_X;
   const effectiveMaxX = mode === 'pk' ? (800 - currentCardWidth - 40) : MAX_X; 
-  // Solo: slightly higher min Y so the pile sits lower in the board (less crowding under timer)
-  const effectiveMinY = mode === 'pk' ? 30 : 52;
-  // Solo: keep pile within typical middle column height so bottom cards aren’t clipped by layout + bottom dock
-  const effectiveMaxY = mode === 'pk' ? 500 - currentCardHeight - 30 : Math.min(MAX_Y, 235);
+  const effectiveMinY = mode === 'pk' ? 30 : MIN_Y;
+  const effectiveMaxY = mode === 'pk' ? (500 - currentCardHeight - 30) : MAX_Y; 
   
   // Helper to update blocked status without re-creating every object if unnecessary
   const updateBlockedStatus = useCallback((allCards: Card[]) => {
@@ -71,7 +69,7 @@ export const useGameLogic = (words: Word[], totalTime: number, mode: GameMode = 
     
     const types: ('char' | 'pinyin' | 'translation')[] = ['char', 'pinyin', 'translation'];
     // In PK mode, use more words for a bigger board
-    const wordCount = mode === 'pk' ? Math.min(words.length, 18) : 10;
+    const wordCount = mode === 'pk' ? Math.min(words.length, 15) : 8;
     setTotalWords(wordCount);
     const uniqueWords = words.slice(0, wordCount);
     setCurrentLevelWords(uniqueWords);
@@ -103,10 +101,8 @@ export const useGameLogic = (words: Word[], totalTime: number, mode: GameMode = 
     const deliveryCards = shuffledRaw.filter(c => deliveryWordIds.includes(c.wordId!));
     const nonDeliveryCards = shuffledRaw.filter(c => !deliveryWordIds.includes(c.wordId!));
 
-    const cardsPerLayer = Math.ceil(nonDeliveryCards.length / layerCount);
-
     const processCard = (raw: Partial<Card>, idx: number, forceLayer?: number) => {
-      const layerValue = forceLayer !== undefined ? forceLayer : Math.min(layerCount - 1, Math.floor(idx / cardsPerLayer));
+      const layerValue = forceLayer !== undefined ? forceLayer : 0; // Default or forced
       
       let x = 0, y = 0, rotation = 0;
       let attempts = 0;
@@ -157,11 +153,27 @@ export const useGameLogic = (words: Word[], totalTime: number, mode: GameMode = 
       } as Card);
     };
 
-    // First, place non-delivery cards in layers 0, 1, 2
-    nonDeliveryCards.forEach((raw, idx) => processCard(raw, idx));
+    // Process non-delivery cards grouped by wordId to keep them in the same layer
+    const nonDeliveryByWord: Record<string, Partial<Card>[]> = {};
+    nonDeliveryCards.forEach(c => {
+      if (!nonDeliveryByWord[c.wordId!]) nonDeliveryByWord[c.wordId!] = [];
+      nonDeliveryByWord[c.wordId!].push(c);
+    });
+
+    const wordIdsPool = Object.keys(nonDeliveryByWord).sort(() => Math.random() - 0.5);
     
-    // Then, place delivery cards on the top layer (layer 2) to ensure they are visible and easy
-    deliveryCards.forEach((raw, idx) => processCard(raw, idx, 2));
+    wordIdsPool.forEach((wordId, wordIdx) => {
+      // Pick a base layer (0 or 1) so triples can span [base, base+1]
+      const baseLayer = wordIdx % (layerCount - 1); 
+      nonDeliveryByWord[wordId].forEach(c => {
+        // Distribute within baseLayer and baseLayer + 1
+        const offset = Math.random() > 0.6 ? 1 : 0;
+        processCard(c, 0, baseLayer + offset);
+      });
+    });
+    
+    // Then, place delivery cards on the top layer (layer 2)
+    deliveryCards.forEach((raw) => processCard(raw, 0, 2));
 
     const initialTools = { shuffle: false, moveOut: false, autoMatch: false };
     setEarnedTools(initialTools);
@@ -253,10 +265,10 @@ export const useGameLogic = (words: Word[], totalTime: number, mode: GameMode = 
             );
             return updateBlockedStatus(next);
           });
-        }, 600); 
+        }, 500); 
         return () => clearTimeout(timer);
       } else if (inSlots.length === 6) {
-        // Elimination logic
+        // If 6 cards are in slots and no match was found above
         setEliminated(prev => {
           const next = { ...prev, [player]: true };
           if (mode === 'solo' || (next.p1 && next.p2)) {
@@ -315,18 +327,30 @@ export const useGameLogic = (words: Word[], totalTime: number, mode: GameMode = 
           const remaining = prev.filter(c => !c.isInSlot && !c.isMatched && !c.isOut);
           const immobile = prev.filter(c => c.isInSlot || c.isMatched || c.isOut);
           
-          // Generate new random positions for the scatter phase
-          const newRemaining = remaining.map((c, i) => {
-            const randomX = Math.random() * (effectiveMaxX - effectiveMinX) + effectiveMinX;
-            const randomY = Math.random() * (effectiveMaxY - effectiveMinY) + effectiveMinY;
+          // Group remaining cards by wordId to keep triplets in same layer
+          const byWord: Record<string, typeof remaining> = {};
+          remaining.forEach(c => {
+            if (!byWord[c.wordId]) byWord[c.wordId] = [];
+            byWord[c.wordId].push(c);
+          });
 
-            return {
-              ...c,
-              x: Math.round(randomX),
-              y: Math.round(randomY),
-              layer: i, // Reset layers slightly
-              rotation: Math.round((Math.random() - 0.5) * 40), // Increased rotation for "messy" shuffle look
-            };
+          const wordIds = Object.keys(byWord).sort(() => Math.random() - 0.5);
+          const newRemaining: any[] = [];
+          
+          wordIds.forEach((wordId, wordIdx) => {
+            const baseLayer = wordIdx % 2; // base layers 0, 1
+            byWord[wordId].forEach(c => {
+              const randomX = Math.random() * (effectiveMaxX - effectiveMinX) + effectiveMinX;
+              const randomY = Math.random() * (effectiveMaxY - effectiveMinY) + effectiveMinY;
+              const offset = Math.random() > 0.6 ? 1 : 0;
+              newRemaining.push({
+                ...c,
+                x: Math.round(randomX),
+                y: Math.round(randomY),
+                layer: baseLayer + offset,
+                rotation: Math.round((Math.random() - 0.5) * 40),
+              });
+            });
           });
 
           const result = [...immobile, ...newRemaining];

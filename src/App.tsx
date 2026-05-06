@@ -28,36 +28,37 @@ export default function App() {
   const getMaxLessons = (level: number) => (level >= 5 ? 15 : 12);
 
   // Filter words based on selection
-  const filterWords = (level: number, lesson: number) => {
+  const filterWords = (level: number, lesson: number, mode: GameMode) => {
     const maxLsn = getMaxLessons(level);
+    const targetCount = mode === 'pk' ? 15 : 8;
     let filtered: Word[] = [];
 
     if (lesson === maxLsn) {
-      // Review lesson: Randomly pick 10 words from all previous lessons
+      // Review lesson: Randomly pick targetCount words from all previous lessons
       const previousWords = VOCABULARY.filter(w => w.level === level && w.lesson < maxLsn);
       // Remove duplicates by character
       const uniqueWords = Array.from(new Map(previousWords.map(w => [w.char, w])).values());
       const shuffled = [...uniqueWords].sort(() => Math.random() - 0.5);
-      filtered = shuffled.slice(0, 10);
+      filtered = shuffled.slice(0, targetCount);
     } else {
       // Normal lesson
       filtered = VOCABULARY.filter(w => w.level === level && w.lesson === lesson);
       
-      // Requirement: if not enough words (10), fill from previous lessons in the same level
-      if (filtered.length < 10) {
+      // Requirement: if not enough words, fill from previous lessons in the same level
+      if (filtered.length < targetCount) {
         const others = VOCABULARY.filter(w => w.level === level && w.lesson < lesson);
         const uniqueOthers = Array.from(new Map(others.map(w => [w.char, w])).values())
                                 .filter(w => !filtered.some(f => f.char === w.char));
         const additional = uniqueOthers.sort(() => Math.random() - 0.5);
-        filtered = [...filtered, ...additional].slice(0, 10);
+        filtered = [...filtered, ...additional].slice(0, targetCount);
       }
     }
     
-    // If still not enough (e.g. Level 1 Lesson 1), just take any from the level
-    if (filtered.length < 10) {
+    // If still not enough, just take any from the level
+    if (filtered.length < targetCount) {
       const anyFromLevel = VOCABULARY.filter(w => w.level === level)
                             .sort(() => Math.random() - 0.5)
-                            .slice(0, 10);
+                            .slice(0, targetCount);
       filtered = anyFromLevel;
     }
 
@@ -72,7 +73,7 @@ export default function App() {
   const handleSelectionDone = (level: number, lesson: number) => {
     setSelectedLevel(level);
     setSelectedLesson(lesson);
-    filterWords(level, lesson);
+    filterWords(level, lesson, gameMode);
     setGameState('preparation');
   };
 
@@ -108,13 +109,13 @@ export default function App() {
     if (selectedLesson < maxLsn) {
       const nextLesson = selectedLesson + 1;
       setSelectedLesson(nextLesson);
-      filterWords(selectedLevel, nextLesson);
+      filterWords(selectedLevel, nextLesson, gameMode);
       setGameState('preparation');
     } else if (selectedLevel < 6) {
       const nextLevel = selectedLevel + 1;
       setSelectedLevel(nextLevel);
       setSelectedLesson(1);
-      filterWords(nextLevel, 1);
+      filterWords(nextLevel, 1, gameMode);
       setGameState('preparation');
     } else {
       handleReturnHome();
